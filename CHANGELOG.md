@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/mgibas/vue-router-fetch/compare/v0.4.0...v0.5.0) (2022-09-28)
+
+
+### Features
+
+* Using PAT ([fb52b3a](https://github.com/mgibas/vue-router-fetch/commit/fb52b3a00d5dd44a4b3f106ed67fa80b1075dbd7))
+
+
+
 # [0.4.0](https://github.com/mgibas/vue-router-fetch/compare/v0.3.0...v0.4.0) (2022-09-28)
 
 
