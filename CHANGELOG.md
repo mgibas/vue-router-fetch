@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/mgibas/vue-router-fetch/compare/v0.3.0...v0.4.0) (2022-09-28)
+
+
+### Features
+
+* publish action ([7ecb477](https://github.com/mgibas/vue-router-fetch/commit/7ecb47750e01390d111c662281e7819bf2b74895))
+
+
+
 # [0.3.0](https://github.com/mgibas/vue-router-fetch/compare/v0.2.0...v0.3.0) (2022-09-28)
 
 
