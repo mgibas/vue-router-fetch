@@ -1,9 +1,8 @@
 name: Publish
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -17,3 +16,5 @@ jobs:
       with:
         version: 7.12.2
     - run: pnpm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
