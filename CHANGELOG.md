@@ -1,3 +1,12 @@
+## [0.6.2](https://github.com/mgibas/vue-router-fetch/compare/v0.6.1...v0.6.2) (2022-09-28)
+
+
+### Bug Fixes
+
+* Added registry url ([0cba3e7](https://github.com/mgibas/vue-router-fetch/commit/0cba3e7faf9f1de91f9b32e634382d8b247bd672))
+
+
+
 ## [0.6.1](https://github.com/mgibas/vue-router-fetch/compare/v0.6.0...v0.6.1) (2022-09-28)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * publish action ([7ecb477](https://github.com/mgibas/vue-router-fetch/commit/7ecb47750e01390d111c662281e7819bf2b74895))
-
-
-
-# [0.3.0](https://github.com/mgibas/vue-router-fetch/compare/v0.2.0...v0.3.0) (2022-09-28)
-
-
-### Features
-
-* one more ([f6c13ed](https://github.com/mgibas/vue-router-fetch/commit/f6c13ed8ab4c7baea78c06334b3f26a8db617e69))
 
 
 
