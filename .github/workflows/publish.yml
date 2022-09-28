@@ -1,7 +1,8 @@
-name: CI
+name: Publish
 
 on:
-  push:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -14,5 +15,4 @@ jobs:
     - uses: pnpm/action-setup@v2.2.2
       with:
         version: 7.12.2
-    - run: pnpm i
-    - run: pnpm test
+    - run: pnpm publish
