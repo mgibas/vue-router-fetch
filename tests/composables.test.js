@@ -15,6 +15,12 @@ describe('useFetchRoute', () => {
     useRoute.mockReturnValue({ path: '/' })
   })
 
+  it('handles empty state', () => {
+    state.data['/'] = null
+    const { data } = useRouteFetch()
+    expect(data).toBeUndefined()
+  })
+
   it('returns route default data', () => {
     state.data['/'] = { default: { foo: 'bar' } }
     const { data } = useRouteFetch()
