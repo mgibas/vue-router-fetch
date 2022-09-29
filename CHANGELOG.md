@@ -1,3 +1,12 @@
+## [0.6.4](https://github.com/mgibas/vue-router-fetch/compare/v0.6.3...v0.6.4) (2022-09-29)
+
+
+### Bug Fixes
+
+* install with vue ([faf60f1](https://github.com/mgibas/vue-router-fetch/commit/faf60f190828e9ca662ba3aeb016938473598c6e))
+
+
+
 ## [0.6.3](https://github.com/mgibas/vue-router-fetch/compare/v0.6.2...v0.6.3) (2022-09-29)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * no git checks on publish ([3086855](https://github.com/mgibas/vue-router-fetch/commit/3086855bcf7dab903064d02796b7c9ef668a2c57))
-
-
-
-# [0.5.0](https://github.com/mgibas/vue-router-fetch/compare/v0.4.0...v0.5.0) (2022-09-28)
-
-
-### Features
-
-* Using PAT ([fb52b3a](https://github.com/mgibas/vue-router-fetch/commit/fb52b3a00d5dd44a4b3f106ed67fa80b1075dbd7))
 
 
 
