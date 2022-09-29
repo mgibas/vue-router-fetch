@@ -1,6 +1,6 @@
 {
   "name": "vue-router-fetch",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "",
   "type": "module",
   "main": "./src/index.js",
