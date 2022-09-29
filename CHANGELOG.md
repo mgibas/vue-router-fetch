@@ -1,3 +1,12 @@
+## [0.6.3](https://github.com/mgibas/vue-router-fetch/compare/v0.6.2...v0.6.3) (2022-09-29)
+
+
+### Bug Fixes
+
+* exporting everything ([c956e60](https://github.com/mgibas/vue-router-fetch/commit/c956e6060a35dee77a5c5980e37e40e6dd74c727))
+
+
+
 ## [0.6.2](https://github.com/mgibas/vue-router-fetch/compare/v0.6.1...v0.6.2) (2022-09-28)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * Using PAT ([fb52b3a](https://github.com/mgibas/vue-router-fetch/commit/fb52b3a00d5dd44a4b3f106ed67fa80b1075dbd7))
-
-
-
-# [0.4.0](https://github.com/mgibas/vue-router-fetch/compare/v0.3.0...v0.4.0) (2022-09-28)
-
-
-### Features
-
-* publish action ([7ecb477](https://github.com/mgibas/vue-router-fetch/commit/7ecb47750e01390d111c662281e7819bf2b74895))
 
 
 
