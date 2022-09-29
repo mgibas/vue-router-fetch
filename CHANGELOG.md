@@ -1,3 +1,13 @@
+## [0.6.5](https://github.com/mgibas/vue-router-fetch/compare/v0.6.4...v0.6.5) (2022-09-29)
+
+
+### Bug Fixes
+
+* Dependencies fix ([c0256b1](https://github.com/mgibas/vue-router-fetch/commit/c0256b18291752f2bbec7617d0f13676242bd087))
+* export in package.json ([84d537a](https://github.com/mgibas/vue-router-fetch/commit/84d537afa1eefb6e72655767b60913be260021ad))
+
+
+
 ## [0.6.4](https://github.com/mgibas/vue-router-fetch/compare/v0.6.3...v0.6.4) (2022-09-29)
 
 
@@ -32,15 +42,6 @@
 
 * npm for a publish command ([588cdb1](https://github.com/mgibas/vue-router-fetch/commit/588cdb1c9c8d6799eb16f310e3dc89b8e1f9babb))
 * npmignore ([9ef1594](https://github.com/mgibas/vue-router-fetch/commit/9ef1594ee5d7dd10d8f1371ad2c5fd64ab65348a))
-
-
-
-# [0.6.0](https://github.com/mgibas/vue-router-fetch/compare/v0.5.0...v0.6.0) (2022-09-28)
-
-
-### Features
-
-* no git checks on publish ([3086855](https://github.com/mgibas/vue-router-fetch/commit/3086855bcf7dab903064d02796b7c9ef668a2c57))
 
 
 
