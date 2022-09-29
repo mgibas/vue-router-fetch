@@ -2,12 +2,12 @@
   "name": "vue-router-fetch",
   "version": "0.6.3",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": "./src/index.js",
   "scripts": {
     "test": "vitest"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "happy-dom": "^6.0.4",
