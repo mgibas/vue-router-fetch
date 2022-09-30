@@ -12,21 +12,19 @@ npm i vue-router-fetch
 
 ```js
 // main.js
-import RouterFetch from 'vue-router-fetch'
+import routerFetch from 'vue-router-fetch'
 ...
-app.use(RouterFetch())
+app.use(routerFetch, { router });
 ```
 
 ## Usage
 
-### Anonymous fetch
-
-If all you need is a single fetch then you can use default, anonymous, fetch:
+### Single fetch
 
 ```js
 // router.js
 {
-  path: 'foo',
+  path: '/',
   meta: {
     fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos'
   }
@@ -55,7 +53,7 @@ Use named fetch when you need to fetch multiple things:
 ```js
 // router.js
 {
-  path: 'foo',
+  path: '/',
   meta: {
     fetch: {
       foos: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos',
@@ -71,17 +69,17 @@ Results will be available under corresponding variables :
 <template>
   <h2>Foos</h2>
   <ul>
-    <li v-for="item in foos">{{item.name}}</li>
+    <li v-for="item in data.foos">{{item.name}}</li>
   </ul>
 
   <h2>Bars</h2>
   <ul>
-    <li v-for="item in bars">{{item.name}}</li>
+    <li v-for="item in data.bars">{{item.name}}</li>
   </ul>
 </template>
 <script setup>
   import { useRouteFetch } from 'vue-router-fetch'
-  const { foos, bars } = useRouteFetch()
+  const { data } = useRouteFetch()
 </script>
 ```
 
@@ -92,7 +90,7 @@ Provide your custom fetch function when you need to do a bit more than just hit 
 ```js
 // router.js
 {
-  path: 'foo',
+  path: '/',
   meta: {
     fetch: () => {
       ...
@@ -102,7 +100,88 @@ Provide your custom fetch function when you need to do a bit more than just hit 
 }
 ```
 
-> :bulb: Custom fetch functions are available in anonymous and named mode.
+> :bulb: Custom fetch functions are available in single and named mode.
+
+## Fetching state
+
+Every fetch that you configured will have fetching state that you can use inside your template (ie. show/hide a loader).
+
+**Single fetch:**
+
+```html
+<template>
+  <h2>Foos</h2>
+  <ul v-if="!fetching">
+    <li v-for="item in data">{{item.name}}</li>
+  </ul>
+</template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { data, fetching } = useRouteFetch()
+</script>
+```
+
+**Named fetch:**
+
+```html
+<template>
+  <h2>Foos</h2>
+  <ul v-if="!fetching.foos">
+    <li v-for="item in data.foos">{{item.name}}</li>
+  </ul>
+
+  <h2>Bars</h2>
+  <ul v-if="!fetching.bars">
+    <li v-for="item in data.bars">{{item.name}}</li>
+  </ul>
+</template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { data, fetching } = useRouteFetch()
+</script>
+```
+
+## Response
+
+In case you need to access ie. `status` code etc. `useRouteFetch` will also expose reactive response for single an every named fetch.
+
+**Single fetch:**
+
+```html
+<template>
+  <h2>Foos</h2>
+  <h3>Status: {{response.status}}</h3>
+  <ul>
+    <li v-for="item in data">{{item.name}}</li>
+  </ul>
+</template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { data, response } = useRouteFetch()
+</script>
+```
+
+**Named fetch:**
+
+```html
+<template>
+  <h2>Foos</h2>
+  <h3>Status: {{response.foos.status}}</h3>
+  <ul>
+    <li v-for="item in data.foos">{{item.name}}</li>
+  </ul>
+
+  <h2>Bars</h2>
+  <h3>Status: {{response.bars.status}}</h3>
+  <ul>
+    <li v-for="item in data.bars">{{item.name}}</li>
+  </ul>
+</template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { data, response } = useRouteFetch()
+</script>
+```
 
 ## Custom fetch options
 
@@ -145,28 +224,3 @@ Same configuration can be passed to each route:
 ```
 
 > :bulb Route options will override global one!
-
-## Fetching state
-
-Every fetch that you configured will have fetching state that you can use inside your template (ie. show/hide a loader):
-
-```html
-<template>
-  <span v-if="$state.fetching">Fetching something...</span>
-
-  <h2>Foos</h2>
-  <ul v-if="$state.fetchingFoo">
-    <li v-for="item in foo">{{item.name}}</li>
-  </ul>
-  <div v-else>Fetching foos...</div>
-  <h2>Bars</h2>
-  <ul v-if="$state.fetchingBar">
-    <li v-for="item in bar">{{item.name}}</li>
-  </ul>
-  <div v-else>Fetching bars...</div>
-</template>
-<script setup>
-  import { useRouteFetch } from 'vue-router-fetch'
-  const { bar, foo, $state } = useRouteFetch()
-</script>
-```
