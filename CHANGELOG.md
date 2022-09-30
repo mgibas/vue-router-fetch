@@ -1,3 +1,12 @@
+## [0.6.6](https://github.com/mgibas/vue-router-fetch/compare/v0.6.5...v0.6.6) (2022-09-29)
+
+
+### Bug Fixes
+
+* no state ([1683784](https://github.com/mgibas/vue-router-fetch/commit/1683784484a7868b31e57d456839edf756bc8e8b))
+
+
+
 ## [0.6.5](https://github.com/mgibas/vue-router-fetch/compare/v0.6.4...v0.6.5) (2022-09-29)
 
 
@@ -32,16 +41,6 @@
 ### Bug Fixes
 
 * Added registry url ([0cba3e7](https://github.com/mgibas/vue-router-fetch/commit/0cba3e7faf9f1de91f9b32e634382d8b247bd672))
-
-
-
-## [0.6.1](https://github.com/mgibas/vue-router-fetch/compare/v0.6.0...v0.6.1) (2022-09-28)
-
-
-### Bug Fixes
-
-* npm for a publish command ([588cdb1](https://github.com/mgibas/vue-router-fetch/commit/588cdb1c9c8d6799eb16f310e3dc89b8e1f9babb))
-* npmignore ([9ef1594](https://github.com/mgibas/vue-router-fetch/commit/9ef1594ee5d7dd10d8f1371ad2c5fd64ab65348a))
 
 
 
