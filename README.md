@@ -5,6 +5,7 @@ Move data fetching from your components to the router!
 - no fetching code inside of your components - focus on presentation and UX rather than some _infrastructure_ code
 - no `beforeRouteEnter`, `beforeRouteUpdate` guards to fetch data
 - no need to maintain `ref` or `reactive` states
+- no need for a store (Vuex, Pinia etc.)
 - URL string is all you need in simplest scenario
 
 ## Instalation
@@ -228,4 +229,4 @@ Same configuration can be passed to each route:
 }
 ```
 
-> :bulb Route options will override global one!
+> :bulb: Route options will override global one!
