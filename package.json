@@ -1,6 +1,6 @@
 {
   "name": "vue-router-fetch",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Move data fetching from your components to the router",
   "keywords": [
     "vue",
