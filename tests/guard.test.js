@@ -1,12 +1,13 @@
+import { isRef } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { describe, it, beforeEach, expect, vi } from 'vitest'
 import Guard from '../src/guard.js'
-import state from '../src/state.js'
+import state, { initState } from '../src/state.js'
 
 let guard
 beforeEach(() => {
   guard = new Guard()
-  state.data = {}
+  state['/'] = null
 })
 
 const setupRouter = (routes = []) => {
@@ -25,48 +26,51 @@ it('does not fetch if fetch meta is not defined', async () => {
 })
 
 describe('fetching', () => {
-  it('default fetch - string - fetches configured url', async () => {
-    const router = setupRouter([{ path: '/', meta: { fetch: 'https://test.url' } }])
-    await router.push('/')
-    expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
-  })
+  describe('single fetch', () => {
+    it('string - fetches configured url', async () => {
+      const router = setupRouter([{ path: '/', meta: { fetch: 'https://test.url' } }])
+      await router.push('/')
+      expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
+    })
 
-  it('default fetch - custom function - calls provided function', async () => {
-    const route = { path: '/', meta: { fetch: vi.fn() } }
-    const router = setupRouter([route])
-    await router.push('/')
-    expect(route.meta.fetch).toHaveBeenCalled()
+    it('function - calls provided function with a route', async () => {
+      const route = { path: '/', meta: { fetch: vi.fn() } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(route.meta.fetch).toHaveBeenCalledWith(expect.objectContaining({ path: '/' }))
+    })
   })
+  describe('named fetch', () => {
+    it('string - fetches all corresponding urls', async () => {
+      const router = setupRouter([
+        {
+          path: '/named',
+          meta: {
+            fetch: {
+              foo: 'https://foo.url',
+              bar: 'https://bar.url',
+            },
+          },
+        },
+      ])
+      await router.push('/named')
+      expect(fetch).toHaveBeenCalledWith('https://foo.url', expect.any(Object))
+      expect(fetch).toHaveBeenCalledWith('https://bar.url', expect.any(Object))
+    })
 
-  it('named fetch - string - fetches all corresponding urls', async () => {
-    const router = setupRouter([
-      {
+    it('function - calls provided function with a route', async () => {
+      const route = {
         path: '/named',
         meta: {
           fetch: {
-            foo: 'https://foo.url',
-            bar: 'https://bar.url',
+            foo: vi.fn(),
           },
         },
-      },
-    ])
-    await router.push('/named')
-    expect(fetch).toHaveBeenCalledWith('https://foo.url', expect.any(Object))
-    expect(fetch).toHaveBeenCalledWith('https://bar.url', expect.any(Object))
-  })
-
-  it('named fetch - custom function - calls provided function', async () => {
-    const route = {
-      path: '/named',
-      meta: {
-        fetch: {
-          foo: vi.fn(),
-        },
-      },
-    }
-    const router = setupRouter([route])
-    await router.push('/named')
-    expect(route.meta.fetch.foo).toHaveBeenCalledWith()
+      }
+      const router = setupRouter([route])
+      await router.push('/named')
+      expect(route.meta.fetch.foo).toHaveBeenCalledWith(expect.objectContaining({ path: '/named' }))
+    })
   })
 
   it('calls fetch with default options', async () => {
@@ -123,10 +127,7 @@ describe('fetching', () => {
   })
 
   it('overrides globally configured fetch options with route one', async () => {
-    guard = new Guard({
-      method: 'POST',
-      headers: { foo: 'bar', global: true },
-    })
+    guard = new Guard({ method: 'POST', headers: { foo: 'bar', global: true } })
     const router = setupRouter([
       {
         path: '/',
@@ -136,93 +137,114 @@ describe('fetching', () => {
     await router.push('/')
     expect(fetch).toHaveBeenCalledWith(expect.any(String), {
       method: 'WEIRD',
-      headers: {
-        'Content-Type': 'application/json',
-        foo: 'foo',
-        global: true,
-      },
+      headers: { 'Content-Type': 'application/json', foo: 'foo', global: true },
     })
   })
 })
 
 describe('data', () => {
-  it.each([
-    {
-      case: 'Default url',
-      fetchMeta: 'url',
-      expected: { default: { foo: 'bar' } },
-      setup: () => {
-        fetch.mockResolvedValue({ json: () => ({ foo: 'bar' }) })
-      },
-    },
-    {
-      case: 'Default function',
-      fetchMeta: vi.fn().mockResolvedValue({ foo: 'bar' }),
-      expected: { default: { foo: 'bar' } },
-    },
-    {
-      case: 'Named url',
-      fetchMeta: { foo: 'foo.url', bar: 'bar.url' },
-      expected: { foo: { foo: 'yes' }, bar: { bar: 'yes' } },
-      setup: () => {
-        fetch.mockResolvedValueOnce({ json: () => ({ foo: 'yes' }) })
-        fetch.mockResolvedValueOnce({ json: () => ({ bar: 'yes' }) })
-      },
-    },
-    {
-      case: 'Named function',
-      fetchMeta: {
-        foo: vi.fn().mockResolvedValue({ foo: 'yes' }),
-        bar: vi.fn().mockResolvedValue({ bar: 'yes' }),
-      },
-      expected: { foo: { foo: 'yes' }, bar: { bar: 'yes' } },
-    },
-  ])('stores result under corresponding state - $case', async ({ fetchMeta, setup, expected }) => {
-    setup?.()
-    const route = { path: '/test', meta: { fetch: fetchMeta } }
-    const router = setupRouter([route])
-    await router.push('/test')
-    expect(state.data['/test']).toEqual(expected)
+  describe('single fetch', () => {
+    it('string - stores result under corresponding state', async () => {
+      fetch.mockResolvedValue({ json: () => ({ foo: 'bar' }) })
+      const route = { path: '/', meta: { fetch: 'ur;' } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].data.value).toEqual({ foo: 'bar' })
+    })
+
+    it('function - stores result under corresponding state', async () => {
+      const route = { path: '/', meta: { fetch: vi.fn().mockResolvedValue({ foo: 'bar' }) } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].data.value).toEqual({ foo: 'bar' })
+    })
+  })
+
+  describe('named fetch', () => {
+    it('string - stores result under corresponding state', async () => {
+      fetch.mockResolvedValueOnce({ json: () => ({ foo: 'yes' }) })
+      fetch.mockResolvedValueOnce({ json: () => ({ bar: 'yes' }) })
+      const route = { path: '/', meta: { fetch: { foo: 'foo.url', bar: 'bar.url' } } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].data.foo.value).toEqual({ foo: 'yes' })
+      expect(state['/'].data.bar.value).toEqual({ bar: 'yes' })
+    })
+
+    it('function - stores result under corresponding state', async () => {
+      const route = {
+        path: '/',
+        meta: {
+          fetch: { foo: vi.fn().mockResolvedValue({ foo: 'yes' }), bar: vi.fn().mockResolvedValue({ bar: 'yes' }) },
+        },
+      }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].data.foo.value).toEqual({ foo: 'yes' })
+      expect(state['/'].data.bar.value).toEqual({ bar: 'yes' })
+    })
   })
 })
 
 describe('fetching state', () => {
-  it('sets default fetch state to true during fetching', async () => {
-    fetch.mockReturnValue(new Promise(() => {}))
-    const router = setupRouter([{ path: '/foo', meta: { fetch: 'https://test.url' } }])
-    await router.push('/foo')
-    expect(state.fetching['/foo'].default).toBeTruthy()
+  describe('single fetch', () => {
+    it('sets fetching to true during fetching', async () => {
+      fetch.mockReturnValue(new Promise(() => {}))
+      const router = setupRouter([{ path: '/', meta: { fetch: 'url' } }])
+      await router.push('/')
+      expect(state['/'].fetching.value).toBeTruthy()
+    })
+
+    it('sets fetching state to false after fetching is resolved', async () => {
+      fetch.mockResolvedValue({ json: vi.fn() })
+      const router = setupRouter([{ path: '/', meta: { fetch: 'url' } }])
+      await router.push('/')
+      expect(state['/'].fetching.value).toBeFalsy()
+    })
   })
 
-  it('sets default fetch state to false after fetching is resolved', async () => {
-    fetch.mockResolvedValue({ json: vi.fn() })
-    const router = setupRouter([{ path: '/foo', meta: { fetch: 'https://test.url' } }])
-    await router.push('/foo')
-    expect(state.fetching['/foo'].default).toBeFalsy()
+  describe('named fetch', () => {
+    it('sets fetching to true during fetching', async () => {
+      fetch.mockReturnValue(new Promise(() => {}))
+      const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'url', bar: 'url' } } }])
+      await router.push('/')
+      expect(state['/'].fetching.foo.value).toBeTruthy()
+      expect(state['/'].fetching.bar.value).toBeTruthy()
+    })
+
+    it('sets fetching state to false after fetching is resolved', async () => {
+      fetch.mockResolvedValue({ json: vi.fn() })
+      const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'url', bar: 'url' } } }])
+      await router.push('/')
+      expect(state['/'].fetching.foo.value).toBeFalsy()
+      expect(state['/'].fetching.bar.value).toBeFalsy()
+    })
+  })
+})
+
+describe('response', () => {
+  describe('single fetch', () => {
+    it('stores fetch response', async () => {
+      const response = { status: 200, json: () => ({}) }
+      fetch.mockResolvedValue(response)
+      const route = { path: '/', meta: { fetch: 'ur' } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].response.value).toEqual(response)
+    })
   })
 
-  it('sets named fetch state to true during fetching and false after its resolved', async () => {
-    fetch.mockResolvedValueOnce({ json: vi.fn() })
-    fetch.mockReturnValueOnce(new Promise(() => {}))
-    const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'url', bar: 'url' } } }])
-    await router.push('/')
-    expect(state.fetching['/'].foo).toBeFalsy()
-    expect(state.fetching['/'].bar).toBeTruthy()
-  })
-
-  it('sets default fetch state to true during named fetches are in progress', async () => {
-    fetch.mockResolvedValueOnce({ json: vi.fn() })
-    fetch.mockReturnValueOnce(new Promise(() => {}))
-    const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'url', bar: 'url' } } }])
-    await router.push('/')
-    expect(state.fetching['/'].default).toBeTruthy()
-  })
-
-  it('sets default fetch state to false after all named fetches resolves', async () => {
-    fetch.mockResolvedValueOnce({ json: vi.fn() })
-    fetch.mockResolvedValueOnce({ json: vi.fn() })
-    const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'url', bar: 'url' } } }])
-    await router.push('/')
-    expect(state.fetching['/'].default).toBeFalsy()
+  describe('named fetch', () => {
+    it('string - stores result under corresponding state', async () => {
+      const responseFoo = { status: 200, json: () => ({}) }
+      const responseBar = { status: 202, json: () => ({}) }
+      fetch.mockResolvedValueOnce(responseFoo)
+      fetch.mockResolvedValueOnce(responseBar)
+      const route = { path: '/', meta: { fetch: { foo: 'foo.url', bar: 'bar.url' } } }
+      const router = setupRouter([route])
+      await router.push('/')
+      expect(state['/'].response.foo.value).toEqual(responseFoo)
+      expect(state['/'].response.bar.value).toEqual(responseBar)
+    })
   })
 })

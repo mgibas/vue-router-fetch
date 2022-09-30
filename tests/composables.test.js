@@ -1,47 +1,43 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest'
+import { isReactive } from 'vue'
 import { useRouteFetch } from '../src/composables.js'
 import { useRoute } from 'vue-router'
 import state from '../src/state.js'
 
 vi.mock('vue-router', () => {
   const useRouteMock = vi.fn()
-  return {
-    useRoute: useRouteMock,
-  }
+  return { useRoute: useRouteMock }
 })
 
 describe('useFetchRoute', () => {
   beforeEach(() => {
-    useRoute.mockReturnValue({ path: '/' })
+    useRoute.mockReturnValue({ path: '/', meta: { fetch: 'url' } })
   })
 
-  it('handles empty state', () => {
-    state.data['/'] = null
+  it('handles route withouth fetches', () => {
+    useRoute().meta.fetch = null
     const { data } = useRouteFetch()
     expect(data).toBeUndefined()
   })
 
-  it('returns route default data', () => {
-    state.data['/'] = { default: { foo: 'bar' } }
+  it('returns reactive state data', () => {
+    state['/'] = { data: { foo: 'default' } }
     const { data } = useRouteFetch()
-    expect(data).toEqual({ foo: 'bar' })
+    expect(isReactive(data)).toBeTruthy()
+    expect(data).toEqual({ foo: 'default' })
   })
 
-  it('returns route named data', () => {
-    state.data['/'] = { foo: { foo: 'named' } }
-    const { foo } = useRouteFetch()
-    expect(foo).toEqual({ foo: 'named' })
+  it('returns reactive state fetching', () => {
+    state['/'] = { fetching: { foo: true } }
+    const { fetching } = useRouteFetch()
+    expect(isReactive(fetching)).toBeTruthy()
+    expect(fetching).toEqual({ foo: true })
   })
 
-  it('returns route default fetching state', () => {
-    state.fetching['/'] = { default: true }
-    const { $state } = useRouteFetch()
-    expect($state.fetching).toEqual(true)
-  })
-
-  it('returns route named fetching state', () => {
-    state.fetching['/'] = { foo: true }
-    const { $state } = useRouteFetch()
-    expect($state.fetchingFoo).toEqual(true)
+  it('returns reactive state response', () => {
+    state['/'] = { response: { status: 200 } }
+    const { response } = useRouteFetch()
+    expect(isReactive(response)).toBeTruthy()
+    expect(response).toEqual({ status: 200 })
   })
 })
