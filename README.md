@@ -1,6 +1,11 @@
 # vue-router-fetch
 
-Easily fetch data for a selected route.
+Move data fetching from your components to the router!
+
+- no fetching code inside of your components - focus on presentation and UX rather than some _infrastructure_ code
+- no `beforeRouteEnter`, `beforeRouteUpdate` guards to fetch data
+- no need to maintain `ref` or `reactive` states
+- URL string is all you need in simplest scenario
 
 ## Instalation
 
