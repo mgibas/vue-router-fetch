@@ -9,7 +9,7 @@ vi.mock('vue-router', () => {
   return { useRoute: useRouteMock }
 })
 
-describe('useFetchRoute', () => {
+describe('useFetchRoute', () => { 
   beforeEach(() => {
     useRoute.mockReturnValue({ path: '/', meta: { fetch: 'url' } })
   })
@@ -39,5 +39,33 @@ describe('useFetchRoute', () => {
     const { response } = useRouteFetch()
     expect(isReactive(response)).toBeTruthy()
     expect(response).toEqual({ status: 200 })
+  })
+
+  describe.each(['post', 'patch', 'delete'])('%s', (method) => {
+    it(`return ${method} method`, () => {
+      const result = useRouteFetch()
+      expect(result[method]).toBeDefined()
+    })
+
+    describe(`single ${method}`, () => {
+      it('calls fetch with configured url, provided body and options', () => {
+        useRoute.mockReturnValue({ path: '/', meta: { [method]: 'url' } })
+        const body = { hello: 'foo' }
+        const options = { a: 'b', headers: { test: 'b' } }
+        const result = useRouteFetch()
+        result[method](body, options)
+        expect(fetch).toHaveBeenCalledWith('url', {
+          method: method.toUpperCase(),
+          body: JSON.stringify(body),
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+        })
+      })
+    })
+
+    // describe(`named ${method}`, () => {})
   })
 })

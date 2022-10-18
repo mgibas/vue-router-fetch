@@ -1,43 +1,14 @@
-import { mergeOptions } from './util.js'
-import state, { initState } from './state.js'
-
-const getStateRef = (state, path, prop, name, named) => {
-  return named ? state[path][prop][name] : state[path][prop]
-}
+import state, { initState, setState } from './state.js'
+import actions, { initActions } from './actions.js'
 
 export default function (options) {
   return (to) => {
     if (!to.meta?.fetch) return
-
-    state[to.path] = state[to.path] ?? initState(to.meta.fetch)
-
     const named = !['string', 'function'].includes(typeof to.meta.fetch)
-    const fetches = {}
-    const fetchOptions = mergeOptions(
-      { method: 'GET', headers: { 'Content-Type': 'application/json' } },
-      mergeOptions(options, to.meta.fetchOptions)
-    )
 
-    named ? Object.assign(fetches, to.meta.fetch) : (fetches[''] = to.meta.fetch)
+    initState(to.path, to.meta.fetch)
+    initActions(to, options)
 
-    Promise.allSettled(
-      Object.entries(fetches).map(([name, spec]) => {
-        const custom = typeof spec === 'function'
-        getStateRef(state, to.path, 'fetching', name, named).value = true
-        ;(custom
-          ? Promise.resolve(spec(to))
-          : fetch(spec, fetchOptions).then((resp) => {
-              getStateRef(state, to.path, 'response', name, named).value = resp
-              return resp.json?.()
-            })
-        )
-          .then((data) => {
-            getStateRef(state, to.path, 'data', name, named).value = data
-          })
-          .finally(() => {
-            getStateRef(state, to.path, 'fetching', name, named).value = false
-          })
-      })
-    )
+    named ? Object.keys(to.meta.fetch).forEach((n) => actions[to.path]?.fetch[n]()) : actions[to.path]?.fetch()
   }
 }
