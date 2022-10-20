@@ -53,17 +53,9 @@ it('does not state or actions fetch meta is not defined', async () => {
   expect(initActions).not.toHaveBeenCalled()
 })
 
-it('calls single fetch action', async () => {
+it('calls aggregated fetch action', async () => {
   actions['/'] = { fetch: vi.fn() }
   const router = setupRouter([{ path: '/', meta: { fetch: 'a' } }])
   await router.push('/')
   expect(actions['/'].fetch).toHaveBeenCalled()
-})
-
-it('calls all named fetch actions', async () => {
-  actions['/'] = { fetch: { foo: vi.fn(), bar: vi.fn() } }
-  const router = setupRouter([{ path: '/', meta: { fetch: { foo: 'bar', bar: 'foo' } } }])
-  await router.push('/')
-  expect(actions['/'].fetch.foo).toHaveBeenCalled()
-  expect(actions['/'].fetch.bar).toHaveBeenCalled()
 })

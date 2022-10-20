@@ -3,13 +3,21 @@ import { isReactive } from 'vue'
 import { useRouteFetch } from '../src/composables.js'
 import { useRoute } from 'vue-router'
 import state from '../src/state.js'
+import actions from '../src/actions.js'
 
 vi.mock('vue-router', () => {
   const useRouteMock = vi.fn()
   return { useRoute: useRouteMock }
 })
+vi.mock('../src/state.js', () => ({ default: {} }))
+vi.mock('../src/actions.js', () => ({ default: {} }))
 
-describe('useFetchRoute', () => { 
+beforeEach(() => {
+  state['/'] = null
+  actions['/'] = null
+})
+
+describe('useFetchRoute', () => {
   beforeEach(() => {
     useRoute.mockReturnValue({ path: '/', meta: { fetch: 'url' } })
   })
@@ -41,6 +49,12 @@ describe('useFetchRoute', () => {
     expect(response).toEqual({ status: 200 })
   })
 
+  it('returns fetch action', () => {
+    actions['/'] = { fetch: vi.fn() }
+    const { fetch } = useRouteFetch()
+    expect(fetch).toBe(actions['/'].fetch)
+  })
+
   describe.each(['post', 'patch', 'delete'])('%s', (method) => {
     it(`return ${method} method`, () => {
       const result = useRouteFetch()
@@ -65,7 +79,5 @@ describe('useFetchRoute', () => {
         })
       })
     })
-
-    // describe(`named ${method}`, () => {})
   })
 })

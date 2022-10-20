@@ -108,7 +108,7 @@ Provide your custom fetch function when you need to do a bit more than just hit 
 
 > :bulb: Custom fetch functions are available in single and named mode.
 
-## Fetching state
+### Fetching state
 
 Every fetch that you configured will have fetching state that you can use inside your template (ie. show/hide a loader).
 
@@ -147,7 +147,7 @@ Every fetch that you configured will have fetching state that you can use inside
 </script>
 ```
 
-## Response
+### Response
 
 In case you need to access ie. `status` code etc. `useRouteFetch` will also expose reactive response for single an every named fetch.
 
@@ -186,6 +186,38 @@ In case you need to access ie. `status` code etc. `useRouteFetch` will also expo
 <script setup>
   import { useRouteFetch } from 'vue-router-fetch'
   const { data, response } = useRouteFetch()
+</script>
+```
+
+### Manual fetch
+
+`useRouteFetch` returns `fetch` function/object so you fetch from your component. This is specially usefull when you need to ie. refetch after some write operation:
+
+```js
+// router.js
+{
+  path: '/',
+  meta: {
+    fetch: {
+      foos: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos',
+      bars: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/bars'
+    }
+  }
+}
+```
+
+```html
+<template> ... </template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { data, fetch } = useRouteFetch()
+
+  function refreshEverything() {
+    fetch()
+  }
+  function refreshFoos() {
+    fetch.foos()
+  }
 </script>
 ```
 

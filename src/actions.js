@@ -34,6 +34,18 @@ const createFetch = (route, spec, options, name) => {
       }
 }
 
+const createAggregatedFetch = (route, spec, options) => {
+  const fetches = Object.entries(spec).reduce(
+    (r, [name, spec]) => ({ ...r, [name]: createFetch(route, spec, options, name) }),
+    {}
+  )
+  const func = () => {
+    Object.values(fetches).forEach((f) => f())
+  }
+  Object.entries(fetches).forEach(([n, f]) => (func[n] = f))
+  return func
+}
+
 const actions = {}
 export default actions
 export function initActions(route, options) {
@@ -42,9 +54,6 @@ export function initActions(route, options) {
   actions[route.path] = {
     fetch: !named
       ? createFetch(route, route.meta.fetch, options)
-      : Object.entries(route.meta.fetch).reduce(
-          (r, [name, spec]) => ({ ...r, [name]: createFetch(route, spec, options, name) }),
-          {}
-        ),
+      : createAggregatedFetch(route, route.meta.fetch, options),
   }
 }

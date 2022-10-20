@@ -177,4 +177,11 @@ describe.each([
       ? expect(fetchSpec[name]).toHaveBeenCalledWith(expect.objectContaining({ path: '/' }))
       : expect(fetchSpec).toHaveBeenCalledWith(expect.objectContaining({ path: '/' }))
   })
+
+  it('fetch calls all configured fetches no matter if its single or named', async () => {
+    await actions['/'].fetch()
+    name
+      ? expect(fetchSpec[name]).toHaveBeenCalledWith(expect.objectContaining({ path: '/' }))
+      : expect(fetchSpec).toHaveBeenCalledWith(expect.objectContaining({ path: '/' }))
+  })
 })

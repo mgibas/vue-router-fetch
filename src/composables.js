@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import state from './state.js'
+import actions from './actions.js'
 
 const writeParams = (method, body, options) => {
   return {
@@ -18,6 +19,7 @@ export function useRouteFetch() {
     data: reactive(state[route.path]?.data),
     fetching: reactive(state[route.path]?.fetching),
     response: reactive(state[route.path]?.response),
+    fetch: actions[[route.path]]?.fetch,
     post: (body, options) => {
       fetch(route.meta.post, writeParams('POST', body, options))
     },

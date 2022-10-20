@@ -1,4 +1,4 @@
-import state, { initState, setState } from './state.js'
+import { initState } from './state.js'
 import actions, { initActions } from './actions.js'
 
 export default function (options) {
@@ -9,6 +9,6 @@ export default function (options) {
     initState(to.path, to.meta.fetch)
     initActions(to, options)
 
-    named ? Object.keys(to.meta.fetch).forEach((n) => actions[to.path]?.fetch[n]()) : actions[to.path]?.fetch()
+    actions[to.path]?.fetch()
   }
 }
