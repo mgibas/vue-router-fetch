@@ -1,3 +1,13 @@
+# [0.8.0](https://github.com/mgibas/vue-router-fetch/compare/v0.7.3...v0.8.0) (2022-10-22)
+
+
+### Features
+
+* Manual fetches ([8f09bfd](https://github.com/mgibas/vue-router-fetch/commit/8f09bfd3a2f41ae7601ed5cac8821f0f2182cb9d))
+* parameters support ([dc51887](https://github.com/mgibas/vue-router-fetch/commit/dc518874107f64a16892f2ef33ce7b679231f6e3))
+
+
+
 ## [0.7.3](https://github.com/mgibas/vue-router-fetch/compare/v0.7.2...v0.7.3) (2022-09-30)
 
 
@@ -21,15 +31,6 @@
 ### Features
 
 * added response ([23dbf05](https://github.com/mgibas/vue-router-fetch/commit/23dbf0581a7d9dcb73e7e8fa345e60583d868757))
-
-
-
-## [0.6.6](https://github.com/mgibas/vue-router-fetch/compare/v0.6.5...v0.6.6) (2022-09-29)
-
-
-### Bug Fixes
-
-* no state ([1683784](https://github.com/mgibas/vue-router-fetch/commit/1683784484a7868b31e57d456839edf756bc8e8b))
 
 
 
