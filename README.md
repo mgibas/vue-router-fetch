@@ -8,6 +8,10 @@ Move data fetching from your components to the router!
 - no need for a store (Vuex, Pinia etc.)
 - URL string is all you need in simplest scenario
 
+## Demo
+
+Take a look at the [live demo](https://mgibas.github.io/vue-router-fetch)!
+
 ## Instalation
 
 ```bash
