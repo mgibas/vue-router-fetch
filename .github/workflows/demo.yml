@@ -14,9 +14,8 @@ jobs:
           node-version: '16.x'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7.12.2
-      - run: cd demo
-      - run: pnpm i
+          version: 7.14.0
+      - run: pnpm i && cd demo && pnpm i
       - run: pnpm build
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1.0.4
