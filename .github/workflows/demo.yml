@@ -18,6 +18,8 @@ jobs:
       - run: cd demo && pnpm i && pnpm build
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1.0.4
+        with:
+          path: 'demo/dist/'
 
   deploy:
     needs: build
