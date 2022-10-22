@@ -10,8 +10,8 @@ let options
 beforeEach(() => {
   options = { some: 'options' }
   guard = new Guard(options)
-  state['/'] = null
-  actions['/'] = null
+  state['/key'] = null
+  actions['/key'] = null
 })
 
 vi.mock('../src/state.js', () => ({
@@ -25,6 +25,10 @@ vi.mock('../src/actions.js', () => ({
   initActions: vi.fn(),
 }))
 
+vi.mock('../src/util.js', () => ({
+  getRouteKey: vi.fn(() => '/key'),
+}))
+
 const setupRouter = (routes = []) => {
   routes.forEach((r) => {
     r.component = {}
@@ -34,19 +38,19 @@ const setupRouter = (routes = []) => {
   return router
 }
 
-it('inits state', async () => {
+it('inits state for route key', async () => {
   const router = setupRouter([{ path: '/', meta: { fetch: 'BOY' } }])
   await router.push('/')
-  expect(initState).toBeCalledWith('/', 'BOY')
+  expect(initState).toBeCalledWith('/key', 'BOY')
 })
 
-it('inits actions', async () => {
+it('inits actions for matched unique path', async () => {
   const router = setupRouter([{ path: '/', meta: { fetch: 'BOY' } }])
   await router.push('/')
-  expect(initActions).toBeCalledWith(expect.objectContaining({ path: '/', meta: { fetch: 'BOY' } }), options)
+  expect(initActions).toBeCalledWith('/key', expect.objectContaining({ path: '/', meta: { fetch: 'BOY' } }), options)
 })
 
-it('does not state or actions fetch meta is not defined', async () => {
+it('does not initialize state or actions when fetch meta is not defined', async () => {
   const router = setupRouter([{ path: '/' }])
   await router.push('/')
   expect(initState).not.toHaveBeenCalled()
@@ -54,8 +58,8 @@ it('does not state or actions fetch meta is not defined', async () => {
 })
 
 it('calls aggregated fetch action', async () => {
-  actions['/'] = { fetch: vi.fn() }
+  actions['/key'] = { fetch: vi.fn() }
   const router = setupRouter([{ path: '/', meta: { fetch: 'a' } }])
   await router.push('/')
-  expect(actions['/'].fetch).toHaveBeenCalled()
+  expect(actions['/key'].fetch).toHaveBeenCalled()
 })

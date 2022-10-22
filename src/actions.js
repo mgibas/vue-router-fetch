@@ -1,17 +1,18 @@
 import { mergeOptions } from './util.js'
 import { setState } from './state.js'
+import { replace } from './params.js'
 
-const createFetch = (route, spec, options, name) => {
+const createFetch = (routeKey, route, spec, options, name) => {
   const custom = typeof spec === 'function'
   return custom
     ? () => {
-        name ? setState(route.path, 'fetching', name, true) : setState(route.path, 'fetching', true)
+        name ? setState(routeKey, 'fetching', name, true) : setState(routeKey, 'fetching', true)
         return Promise.resolve(spec(route))
           .then((data) => {
-            name ? setState(route.path, 'data', name, data) : setState(route.path, 'data', data)
+            name ? setState(routeKey, 'data', name, data) : setState(routeKey, 'data', data)
           })
           .finally(() => {
-            name ? setState(route.path, 'fetching', name, false) : setState(route.path, 'fetching', false)
+            name ? setState(routeKey, 'fetching', name, false) : setState(routeKey, 'fetching', false)
           })
       }
     : () => {
@@ -19,24 +20,24 @@ const createFetch = (route, spec, options, name) => {
           { method: 'GET', headers: { 'Content-Type': 'application/json' } },
           mergeOptions(options, name ? route.meta.fetchOptions?.[name] : route.meta.fetchOptions)
         )
-        name ? setState(route.path, 'fetching', name, true) : setState(route.path, 'fetching', true)
-        return fetch(spec, fetchOptions)
+        name ? setState(routeKey, 'fetching', name, true) : setState(routeKey, 'fetching', true)
+        return fetch(replace(spec, route.params), fetchOptions)
           .then((resp) => {
-            name ? setState(route.path, 'response', name, resp) : setState(route.path, 'response', resp)
+            name ? setState(routeKey, 'response', name, resp) : setState(routeKey, 'response', resp)
             return resp.json?.()
           })
           .then((data) => {
-            name ? setState(route.path, 'data', name, data) : setState(route.path, 'data', data)
+            name ? setState(routeKey, 'data', name, data) : setState(routeKey, 'data', data)
           })
           .finally(() => {
-            name ? setState(route.path, 'fetching', name, false) : setState(route.path, 'fetching', false)
+            name ? setState(routeKey, 'fetching', name, false) : setState(routeKey, 'fetching', false)
           })
       }
 }
 
-const createAggregatedFetch = (route, spec, options) => {
+const createAggregatedFetch = (path, route, spec, options) => {
   const fetches = Object.entries(spec).reduce(
-    (r, [name, spec]) => ({ ...r, [name]: createFetch(route, spec, options, name) }),
+    (r, [name, spec]) => ({ ...r, [name]: createFetch(path, route, spec, options, name) }),
     {}
   )
   const func = () => {
@@ -48,12 +49,12 @@ const createAggregatedFetch = (route, spec, options) => {
 
 const actions = {}
 export default actions
-export function initActions(route, options) {
+export function initActions(routeKey, route, options) {
   const named = !['string', 'function'].includes(typeof route.meta.fetch)
 
-  actions[route.path] = {
+  actions[routeKey] = {
     fetch: !named
-      ? createFetch(route, route.meta.fetch, options)
-      : createAggregatedFetch(route, route.meta.fetch, options),
+      ? createFetch(routeKey, route, route.meta.fetch, options)
+      : createAggregatedFetch(routeKey, route, route.meta.fetch, options),
   }
 }

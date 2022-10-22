@@ -108,6 +108,32 @@ Provide your custom fetch function when you need to do a bit more than just hit 
 
 > :bulb: Custom fetch functions are available in single and named mode.
 
+### Parameters
+
+`vue-router-fetch` can use route parameters with your fetch url as long as they have a matching name:
+
+```js
+// router.js
+{
+  path: '/home/:id',
+  meta: {
+    fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos/:id'
+  }
+}
+```
+
+You can use route params with a query string as well:
+
+```js
+// router.js
+{
+  path: '/home/:id',
+  meta: {
+    fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos?id=:id'
+  }
+}
+```
+
 ### Fetching state
 
 Every fetch that you configured will have fetching state that you can use inside your template (ie. show/hide a loader).

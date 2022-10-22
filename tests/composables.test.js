@@ -11,10 +11,11 @@ vi.mock('vue-router', () => {
 })
 vi.mock('../src/state.js', () => ({ default: {} }))
 vi.mock('../src/actions.js', () => ({ default: {} }))
+vi.mock('../src/util.js', () => ({ getRouteKey: vi.fn(() => '/key') }))
 
 beforeEach(() => {
-  state['/'] = null
-  actions['/'] = null
+  state['/key'] = null
+  actions['/key'] = null
 })
 
 describe('useFetchRoute', () => {
@@ -29,30 +30,30 @@ describe('useFetchRoute', () => {
   })
 
   it('returns reactive state data', () => {
-    state['/'] = { data: { foo: 'default' } }
+    state['/key'] = { data: { foo: 'default' } }
     const { data } = useRouteFetch()
     expect(isReactive(data)).toBeTruthy()
     expect(data).toEqual({ foo: 'default' })
   })
 
   it('returns reactive state fetching', () => {
-    state['/'] = { fetching: { foo: true } }
+    state['/key'] = { fetching: { foo: true } }
     const { fetching } = useRouteFetch()
     expect(isReactive(fetching)).toBeTruthy()
     expect(fetching).toEqual({ foo: true })
   })
 
   it('returns reactive state response', () => {
-    state['/'] = { response: { status: 200 } }
+    state['/key'] = { response: { status: 200 } }
     const { response } = useRouteFetch()
     expect(isReactive(response)).toBeTruthy()
     expect(response).toEqual({ status: 200 })
   })
 
   it('returns fetch action', () => {
-    actions['/'] = { fetch: vi.fn() }
+    actions['/key'] = { fetch: vi.fn() }
     const { fetch } = useRouteFetch()
-    expect(fetch).toBe(actions['/'].fetch)
+    expect(fetch).toBe(actions['/key'].fetch)
   })
 
   describe.each(['post', 'patch', 'delete'])('%s', (method) => {

@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import state from './state.js'
 import actions from './actions.js'
+import { getRouteKey } from './util.js'
 
 const writeParams = (method, body, options) => {
   return {
@@ -14,12 +15,13 @@ const writeParams = (method, body, options) => {
 
 export function useRouteFetch() {
   const route = useRoute()
+  const key = getRouteKey(route)
 
   return {
-    data: reactive(state[route.path]?.data),
-    fetching: reactive(state[route.path]?.fetching),
-    response: reactive(state[route.path]?.response),
-    fetch: actions[[route.path]]?.fetch,
+    data: reactive(state[key]?.data),
+    fetching: reactive(state[key]?.fetching),
+    response: reactive(state[key]?.response),
+    fetch: actions[[key]]?.fetch,
     post: (body, options) => {
       fetch(route.meta.post, writeParams('POST', body, options))
     },

@@ -15,3 +15,7 @@ export function mergeOptions(globalOpt = {}, routeOpt = {}) {
     },
   }
 }
+
+export function getRouteKey(route) {
+  return route.matched[route.matched.length - 1].path
+}
