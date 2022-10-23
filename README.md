@@ -1,5 +1,7 @@
 # vue-router-fetch
 
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/vue-router-fetch?style=for-the-badge)
+
 Move data fetching from your components to the router!
 
 - no fetching code inside of your components - focus on presentation and UX rather than some _infrastructure_ code
