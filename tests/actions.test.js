@@ -27,6 +27,11 @@ describe('initActions', () => {
     expect(actions['/'].fetch.foo).toBeInstanceOf(Function)
     expect(actions['/'].fetch.bar).toBeInstanceOf(Function)
   })
+
+  it('initialize get action even when fetch is not defined', async () => {
+    initActions('/', {})
+    expect(actions['/'].get).toBeInstanceOf(Function)
+  })
 })
 
 describe.each([
@@ -193,5 +198,126 @@ describe.each([
     name
       ? expect(fetchSpec[name]).toHaveBeenCalledWith(expect.objectContaining({ meta: { fetch: fetchSpec } }))
       : expect(fetchSpec).toHaveBeenCalledWith(expect.objectContaining({ meta: { fetch: fetchSpec } }))
+  })
+})
+
+describe.each([
+  { fn: 'get', method: 'GET' },
+  { fn: 'del', method: 'DELETE' },
+])('$method', ({ fn, method }) => {
+  beforeEach(() => {
+    initActions('/', {})
+  })
+
+  it('calls fetch with provided url', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
+  })
+
+  it('calls fetch with default options', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  it.each([
+    { case: 'static headers', headers: { test: 'hello' } },
+    { case: 'function headers', headers: () => ({ test: 'hello' }) },
+  ])('calls fetch using globaly configured $case', async ({ headers }) => {
+    initActions('/', {}, { headers })
+    await actions['/'][fn]('https://test.url')
+
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method,
+      headers: { 'Content-Type': 'application/json', test: 'hello' },
+    })
+  })
+
+  it('overrides globally configured fetch options with provided one', async () => {
+    initActions('/', {}, { method, headers: { foo: 'bar', global: true } })
+    await actions['/'][fn]('https://test.url', { method: 'WEIRD', headers: { foo: 'foo' } })
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method: 'WEIRD',
+      headers: { 'Content-Type': 'application/json', foo: 'foo', global: true },
+    })
+  })
+
+  it('returns promise that resolves data and response', async () => {
+    const response = { status: 200, json: () => ({ data: true }) }
+    fetch.mockResolvedValueOnce(response)
+    const result = await actions['/'][fn]('https://test.url')
+    expect(result.data).toEqual({ data: true })
+    expect(result.response).toBe(response)
+  })
+})
+
+describe.each([
+  { fn: 'post', method: 'POST' },
+  { fn: 'put', method: 'PUT' },
+  { fn: 'patch', method: 'PATCH' },
+])('$method', ({ fn, method }) => {
+  beforeEach(() => {
+    initActions('/', {})
+  })
+
+  it('calls fetch with provided url', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
+  })
+
+  it('calls fetch with provided payload', async () => {
+    await actions['/'][fn]('https://test.url', { data: 'foo' })
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method,
+      body: JSON.stringify({ data: 'foo' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  it('calls fetch with default options', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  it.each([
+    { case: 'static headers', headers: { test: 'hello' } },
+    { case: 'function headers', headers: () => ({ test: 'hello' }) },
+  ])('calls fetch using globaly configured $case', async ({ headers }) => {
+    initActions('/', {}, { headers })
+    await actions['/'][fn]('https://test.url')
+
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method,
+      headers: { 'Content-Type': 'application/json', test: 'hello' },
+    })
+  })
+
+  it('overrides globally configured fetch options with provided one', async () => {
+    initActions('/', {}, { method, headers: { foo: 'bar', global: true } })
+    await actions['/'][fn]('https://test.url', {}, { method: 'WEIRD', headers: { foo: 'foo' } })
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), {
+      method: 'WEIRD',
+      body: '{}',
+      headers: { 'Content-Type': 'application/json', foo: 'foo', global: true },
+    })
+  })
+
+  it('returns promise that resolves data and response', async () => {
+    const response = { status: 200, json: () => ({ data: true }) }
+    fetch.mockResolvedValueOnce(response)
+    const result = await actions['/'][fn]('https://test.url')
+    expect(result.data).toEqual({ data: true })
+    expect(result.response).toBe(response)
   })
 })

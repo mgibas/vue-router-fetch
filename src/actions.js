@@ -49,12 +49,58 @@ const createAggregatedFetch = (path, route, spec, options) => {
 
 const actions = {}
 export default actions
-export function initActions(routeKey, route, options) {
-  const named = !['string', 'function'].includes(typeof route.meta.fetch)
+export function initActions(routeKey, route, globalOptions) {
+  const named = !['string', 'function'].includes(typeof route.meta?.fetch)
 
-  actions[routeKey] = {
-    fetch: !named
-      ? createFetch(routeKey, route, route.meta.fetch, options)
-      : createAggregatedFetch(routeKey, route, route.meta.fetch, options),
+  actions[routeKey] = {}
+  if (route.meta?.fetch) {
+    actions[routeKey].fetch = !named
+      ? createFetch(routeKey, route, route.meta.fetch, globalOptions)
+      : createAggregatedFetch(routeKey, route, route.meta.fetch, globalOptions)
+  }
+  actions[routeKey].get = (url, options) => {
+    return fetch(
+      url,
+      mergeOptions(
+        { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+        mergeOptions(globalOptions, options)
+      )
+    ).then((response) => ({ response, data: response.json?.() }))
+  }
+  actions[routeKey].del = (url, options) => {
+    return fetch(
+      url,
+      mergeOptions(
+        { method: 'DELETE', headers: { 'Content-Type': 'application/json' } },
+        mergeOptions(globalOptions, options)
+      )
+    ).then((response) => ({ response, data: response.json?.() }))
+  }
+  actions[routeKey].post = (url, body, options) => {
+    return fetch(
+      url,
+      mergeOptions(
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
+        mergeOptions(globalOptions, options)
+      )
+    ).then((response) => ({ response, data: response.json?.() }))
+  }
+  actions[routeKey].patch = (url, body, options) => {
+    return fetch(
+      url,
+      mergeOptions(
+        { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
+        mergeOptions(globalOptions, options)
+      )
+    ).then((response) => ({ response, data: response.json?.() }))
+  }
+  actions[routeKey].put = (url, body, options) => {
+    return fetch(
+      url,
+      mergeOptions(
+        { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
+        mergeOptions(globalOptions, options)
+      )
+    ).then((response) => ({ response, data: response.json?.() }))
   }
 }

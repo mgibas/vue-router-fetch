@@ -251,6 +251,38 @@ In case you need to access ie. `status` code etc. `useRouteFetch` will also expo
 </script>
 ```
 
+### Manual methods
+
+Applications are more than just fetching data so `useRouteFetch` exposes `get`, `post`, `patch`, `put` and `del` (delete) methods that you can call directly.
+
+```html
+<template> ... </template>
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { get, post, del, patch } = useRouteFetch()
+
+  del('https://632f9c11f5fda801f8d41dd6.mockapi.io/foos/6')
+    .then(({ data, response }) => { ... })
+</script>
+```
+
+Every method returns a promise that will resolve an `Object` with `data` (json data from a reponse) and `response` if you need access to full reponse.
+
+`post`, `push` and `put` accept a payload to send as a second argument:
+
+```html
+<script setup>
+  import { useRouteFetch } from 'vue-router-fetch'
+  const { post, patch } = useRouteFetch()
+
+  post('https://632f9c11f5fda801f8d41dd6.mockapi.io/foos', { name: 'new foo' })
+    .then(({ data, response }) => { ... })
+
+  patch('https://632f9c11f5fda801f8d41dd6.mockapi.io/foos/6', { name: 'update' })
+    .then(({ data, response }) => { ... })
+</script>
+```
+
 ## Custom fetch options
 
 You can pas your configuration to `fetch` method on a global and per route basis

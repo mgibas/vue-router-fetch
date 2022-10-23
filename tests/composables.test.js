@@ -50,35 +50,8 @@ describe('useFetchRoute', () => {
     expect(response).toEqual({ status: 200 })
   })
 
-  it('returns fetch action', () => {
-    actions['/key'] = { fetch: vi.fn() }
-    const { fetch } = useRouteFetch()
-    expect(fetch).toBe(actions['/key'].fetch)
-  })
-
-  describe.each(['post', 'patch', 'delete'])('%s', (method) => {
-    it(`return ${method} method`, () => {
-      const result = useRouteFetch()
-      expect(result[method]).toBeDefined()
-    })
-
-    describe(`single ${method}`, () => {
-      it('calls fetch with configured url, provided body and options', () => {
-        useRoute.mockReturnValue({ path: '/', meta: { [method]: 'url' } })
-        const body = { hello: 'foo' }
-        const options = { a: 'b', headers: { test: 'b' } }
-        const result = useRouteFetch()
-        result[method](body, options)
-        expect(fetch).toHaveBeenCalledWith('url', {
-          method: method.toUpperCase(),
-          body: JSON.stringify(body),
-          ...options,
-          headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-          },
-        })
-      })
-    })
+  it.each(['fetch', 'get', 'post', 'put', 'del', 'patch'])('returns $1 action', (method) => {
+    actions['/key'] = { [method]: vi.fn() }
+    expect(useRouteFetch()[method]).toBe(actions['/key'][method])
   })
 })
