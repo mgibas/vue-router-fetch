@@ -58,12 +58,12 @@ describe('initState', () => {
 describe('setState', () => {
   it('sets single state if name is not passed', () => {
     state['/'] = { fetching: ref() }
-    setState('/', 'fetching', { hello: 'foo' })
+    setState('/', ['fetching', null], { hello: 'foo' })
     expect(state['/'].fetching.value).toEqual({ hello: 'foo' })
   })
   it('sets named state if name is passed', () => {
     state['/'] = { fetching: { foo: ref() } }
-    setState('/', 'fetching', 'foo', { hello: 'foo' })
+    setState('/', ['fetching', 'foo'], { hello: 'foo' })
     expect(state['/'].fetching.foo.value).toEqual({ hello: 'foo' })
   })
 })

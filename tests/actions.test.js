@@ -123,9 +123,7 @@ describe.each([
     const response = { status: 200, json: () => ({}) }
     fetch.mockResolvedValueOnce(response)
     await fetchFunc()
-    name
-      ? expect(setState).toHaveBeenCalledWith('/', 'response', name, response)
-      : expect(setState).toHaveBeenCalledWith('/', 'response', response)
+    expect(setState).toHaveBeenCalledWith('/', ['response', name], response)
   })
 })
 
@@ -149,25 +147,19 @@ describe.each([
   it('sets fetching state to true during fetching', () => {
     fetch.mockReturnValue(new Promise(() => {}))
     fetchFunc()
-    name
-      ? expect(setState).toHaveBeenCalledWith('/', 'fetching', name, true)
-      : expect(setState).toHaveBeenCalledWith('/', 'fetching', true)
+    expect(setState).toHaveBeenCalledWith('/', ['fetching', name], true)
   })
 
   it('sets fetching state to false after fetching is resolved', async () => {
     fetch.mockResolvedValue({ json: vi.fn() })
     await fetchFunc()
-    name
-      ? expect(setState).toHaveBeenCalledWith('/', 'fetching', name, false)
-      : expect(setState).toHaveBeenCalledWith('/', 'fetching', false)
+    expect(setState).toHaveBeenCalledWith('/', ['fetching', name], false)
   })
 
   it('stores result under corresponding state', async () => {
     fetch.mockResolvedValue({ json: () => ({ foo: 'bar' }) })
     await fetchFunc()
-    name
-      ? expect(setState).toHaveBeenCalledWith('/', 'data', name, { foo: 'bar' })
-      : expect(setState).toHaveBeenCalledWith('/', 'data', { foo: 'bar' })
+    expect(setState).toHaveBeenCalledWith('/', ['data', name], { foo: 'bar' })
   })
 })
 
