@@ -1,3 +1,7 @@
+## [0.9.2](https://github.com/mgibas/vue-router-fetch/compare/v0.9.1...v0.9.2) (2022-10-24)
+
+
+
 ## [0.9.1](https://github.com/mgibas/vue-router-fetch/compare/v0.9.0...v0.9.1) (2022-10-23)
 
 
@@ -27,10 +31,6 @@
 
 
 ## [0.7.3](https://github.com/mgibas/vue-router-fetch/compare/v0.7.2...v0.7.3) (2022-09-30)
-
-
-
-## [0.7.2](https://github.com/mgibas/vue-router-fetch/compare/v0.7.1...v0.7.2) (2022-09-30)
 
 
 
