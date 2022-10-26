@@ -1,5 +1,4 @@
 <template>
-  <h1>Foo details</h1>
   <span v-if="fetching">...</span>
   <dl v-else>
     <div>

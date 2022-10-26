@@ -1,5 +1,4 @@
 <template>
-  <h1>Bars</h1>
   <div>
     <input type="text" v-model="name" />
     <button @click="addBar" :disabled="!name">Add bar</button>

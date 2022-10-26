@@ -2,13 +2,22 @@
 
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/vue-router-fetch?style=for-the-badge)
 
-Move data fetching from your components to the router!
+Declarative fetching - move data fetching from your components to the router!
 
 - no fetching code inside of your components - focus on presentation and UX rather than some _infrastructure_ code
 - no `beforeRouteEnter`, `beforeRouteUpdate` guards to fetch data
 - no need to maintain `ref` or `reactive` states
 - no need for a store (Vuex, Pinia etc.)
 - URL string is all you need in simplest scenario
+
+## Fetures
+
+- Declarative fetching in the router
+- Route parameters support
+- Reactive fetching state
+- Tiny - around 1kB thanks to native `fetch`
+- Easily configurable
+- Custom fetch function support
 
 ## Demo
 

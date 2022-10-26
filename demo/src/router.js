@@ -9,8 +9,10 @@ export default createRouter({
   routes: [
     {
       path: '/',
+      name: 'home',
       component: Home,
       meta: {
+        title: 'Home',
         fetch: {
           foos: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos',
           bars: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/bars',
@@ -19,15 +21,19 @@ export default createRouter({
     },
     {
       path: '/foos',
+      name: 'foos',
       component: Foos,
       meta: {
+        title: 'Foos',
         fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos',
       },
     },
     {
       path: '/bars',
+      name: 'bars',
       component: Bars,
       meta: {
+        title: 'Bars',
         fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/bars',
       },
     },
@@ -36,6 +42,7 @@ export default createRouter({
       name: 'foo',
       component: Foo,
       meta: {
+        title: 'Foo details',
         fetch: 'https://632f9c11f5fda801f8d41dd6.mockapi.io/foos/:id',
       },
     },

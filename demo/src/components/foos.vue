@@ -1,6 +1,4 @@
 <template>
-  <h1>Foos</h1>
-
   <span v-if="fetching">...</span>
   <ul v-else>
     <li v-for="foo in data">
