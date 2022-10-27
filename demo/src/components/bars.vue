@@ -1,17 +1,33 @@
 <template>
-  <div>
-    <input type="text" v-model="name" />
-    <button @click="addBar" :disabled="!name">Add bar</button>
-  </div>
-  <span v-if="fetching">...</span>
-  <ul v-else>
-    <li v-for="bar in data">{{ bar.name }} <button @click="deleteBar(bar.id)">X</button></li>
-  </ul>
+  <list>
+    <list-item v-for="bar in data" :title="bar.name" :to="{ name: 'bar', params: { id: bar.id } }">
+      <template #actions>
+        <button title="Remove" @click.prevent="deleteBar(bar.id)">Remove</button>
+      </template>
+    </list-item>
+  </list>
+
+  <teleport to="#actions">
+    <div>
+      <label for="newBar" class="sr-only">Bar name</label>
+      <input
+        type="text"
+        name="email"
+        id="newBar"
+        v-model="name"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      />
+    </div>
+    <btn @click="addBar" :disabled="!name" title="Add bar">Add</btn>
+  </teleport>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouteFetch } from 'vue-router-fetch'
+import Btn from './btn.vue'
+import List from './list.vue'
+import ListItem from './list-item.vue'
 
 const name = ref()
 const { data, fetching, post, del, fetch } = useRouteFetch()
