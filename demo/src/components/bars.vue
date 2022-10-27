@@ -1,5 +1,5 @@
 <template>
-  <list>
+  <list class="rounded-lg bg-white shadow">
     <list-item v-for="bar in data" :title="bar.name" :to="{ name: 'bar', params: { id: bar.id } }">
       <template #actions>
         <button title="Remove" @click.prevent="deleteBar(bar.id)">Remove</button>
