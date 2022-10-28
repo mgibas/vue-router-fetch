@@ -3,7 +3,7 @@ export function toCamelCase(...args) {
   return first.toLowerCase() + rest.filter((r) => r).reduce((r, n) => r + n[0].toUpperCase() + n.substring(1), '')
 }
 
-export function mergeOptions(globalOpt = {}, routeOpt = {}) {
+export function merge(globalOpt = {}, routeOpt = {}) {
   const { headers: globalHeaders, ...globalOptions } = globalOpt
   const { headers: routeHeaders, ...routeOptions } = routeOpt
   return {

@@ -1,30 +1,24 @@
-import { mergeOptions } from './util.js'
+import { merge } from './util.js'
 import { setState } from './state.js'
 import { replace } from './params.js'
 
 const createFetch = (routeKey, route, spec, options, name) => {
   const custom = typeof spec === 'function'
-  return custom
-    ? () => {
-        setState(routeKey, ['fetching', name], true)
-        return Promise.resolve(spec(route))
-          .then((data) => setState(routeKey, ['data', name], data))
-          .finally(() => setState(routeKey, ['fetching', name], false))
-      }
+  const meat = custom
+    ? () => Promise.resolve(spec(route))
     : () => {
-        const fetchOptions = mergeOptions(
-          { method: 'GET', headers: { 'Content-Type': 'application/json' } },
-          mergeOptions(options, name ? route.meta.fetchOptions?.[name] : route.meta.fetchOptions)
-        )
-        setState(routeKey, ['fetching', name], true)
-        return fetch(replace(spec, route.params), fetchOptions)
-          .then((resp) => {
-            setState(routeKey, ['response', name], resp)
-            return resp.json?.()
-          })
-          .then((data) => setState(routeKey, ['data', name], data))
-          .finally(() => setState(routeKey, ['fetching', name], false))
+        const opt = name ? route.meta.fetchOptions?.[name] : route.meta.fetchOptions
+        return f(spec, null, merge(options, opt), 'GET', route.params).then(({ response, data }) => {
+          setState(routeKey, ['response', name], response)
+          return data
+        })
       }
+  return () => {
+    setState(routeKey, ['fetching', name], true)
+    return meat()
+      .then((data) => setState(routeKey, ['data', name], data))
+      .finally(() => setState(routeKey, ['fetching', name], false))
+  }
 }
 
 const createAggregatedFetch = (key, route, spec, options) => {
@@ -32,17 +26,16 @@ const createAggregatedFetch = (key, route, spec, options) => {
     (r, [name, spec]) => ({ ...r, [name]: createFetch(key, route, spec, options, name) }),
     {}
   )
-  const func = () => {
-    Object.values(fetches).forEach((f) => f())
-  }
-  Object.entries(fetches).forEach(([n, f]) => (func[n] = f))
-  return func
+  return Object.assign(() => Object.values(fetches).forEach((f) => f()), fetches)
 }
 
-const justFetch = (url, body, options, method) => {
+const f = (url, body, options, method, params) => {
   const defaultOptions = { method, headers: { 'Content-Type': 'application/json' } }
   if (body) defaultOptions.body = JSON.stringify(body)
-  return fetch(url, mergeOptions(defaultOptions, options)).then((response) => ({ response, data: response.json?.() }))
+  return fetch(replace(url, params), merge(defaultOptions, options)).then((response) => ({
+    response,
+    data: response.json?.(),
+  }))
 }
 
 const actions = {}
@@ -56,9 +49,9 @@ export function initActions(routeKey, route, globalOptions) {
       ? createFetch(routeKey, route, route.meta.fetch, globalOptions)
       : createAggregatedFetch(routeKey, route, route.meta.fetch, globalOptions)
   }
-  actions[routeKey].get = (url, options) => justFetch(url, null, mergeOptions(globalOptions, options), 'GET')
-  actions[routeKey].del = (url, options) => justFetch(url, null, mergeOptions(globalOptions, options), 'DELETE')
-  actions[routeKey].post = (url, body, options) => justFetch(url, body, mergeOptions(globalOptions, options), 'POST')
-  actions[routeKey].patch = (url, body, options) => justFetch(url, body, mergeOptions(globalOptions, options), 'PATCH')
-  actions[routeKey].put = (url, body, options) => justFetch(url, body, mergeOptions(globalOptions, options), 'PUT')
+  actions[routeKey].get = (url, options) => f(url, null, merge(globalOptions, options), 'GET', route.params)
+  actions[routeKey].del = (url, options) => f(url, null, merge(globalOptions, options), 'DELETE', route.params)
+  actions[routeKey].post = (url, body, options) => f(url, body, merge(globalOptions, options), 'POST', route.params)
+  actions[routeKey].patch = (url, body, options) => f(url, body, merge(globalOptions, options), 'PATCH', route.params)
+  actions[routeKey].put = (url, body, options) => f(url, body, merge(globalOptions, options), 'PUT', route.params)
 }

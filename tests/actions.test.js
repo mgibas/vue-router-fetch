@@ -198,12 +198,17 @@ describe.each([
   { fn: 'del', method: 'DELETE' },
 ])('$method', ({ fn, method }) => {
   beforeEach(() => {
-    initActions('/', {})
+    initActions('/', { params: { id: 1, foo: 'bar' } })
   })
 
   it('calls fetch with provided url', async () => {
     await actions['/'][fn]('https://test.url')
     expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
+  })
+
+  it('parse provided url with route params', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(replace).toHaveBeenCalledWith('https://test.url', { id: 1, foo: 'bar' })
   })
 
   it('calls fetch with default options', async () => {
@@ -253,12 +258,17 @@ describe.each([
   { fn: 'patch', method: 'PATCH' },
 ])('$method', ({ fn, method }) => {
   beforeEach(() => {
-    initActions('/', {})
+    initActions('/', { params: { id: 1, foo: 'bar' } })
   })
 
   it('calls fetch with provided url', async () => {
     await actions['/'][fn]('https://test.url')
     expect(fetch).toHaveBeenCalledWith('https://test.url', expect.any(Object))
+  })
+
+  it('parse provided url with route params', async () => {
+    await actions['/'][fn]('https://test.url')
+    expect(replace).toHaveBeenCalledWith('https://test.url', { id: 1, foo: 'bar' })
   })
 
   it('calls fetch with provided payload', async () => {
