@@ -31,14 +31,17 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3
         id: 'changelog'
         with:
-          github-token: ${{ secrets.PAT }}
           skip-on-empty: ${{ !inputs.force }}
+
       - name: Create Release
         uses: actions/create-release@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}
           body: ${{ steps.changelog.outputs.clean_changelog }}
+
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
