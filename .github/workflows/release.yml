@@ -42,6 +42,7 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
 
       - name: Publish to NPM
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
